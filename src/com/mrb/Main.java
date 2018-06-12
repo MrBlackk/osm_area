@@ -16,6 +16,42 @@ public class Main {
     public static final String OSM_API = "https://api.openstreetmap.org/api/0.6/";
 
     public static void main(String[] args) {
+        BoundingBox bbox = getBbox(args);
+        MapDataDao data = null;
+        try {
+            OsmConnection osm = new OsmConnection(OSM_API,"");
+            data = new MapDataDao(osm);
+            DataHandler dataHandler = new DataHandler();
+            data.getMap(bbox, dataHandler);
+        } catch (OsmNotFoundException e) {
+            System.err.println("API error: " + e.getMessage());
+            System.exit(1);
+        }
+
+        ArrayList<Area> areas = new ArrayList<Area>(areaIds.size());
+        for (Long key : areaIds.keySet()) {
+            areas.add(new Area(key, getName(key, data), calculateArea(areaIds.get(key), data)));
+        }
+        ArrayList<Distance> distances = new ArrayList<Distance>(lengthIds.size());
+        for (Long key : lengthIds.keySet()) {
+            distances.add(new Distance(key, getName(key, data), calculateLength(lengthIds.get(key), data)));
+        }
+
+        Collections.sort(areas, Collections.reverseOrder());
+        Collections.sort(distances, Collections.reverseOrder());
+
+        System.out.println("Areas:");
+        for (Area area: areas){
+            System.out.println(area);
+        }
+        System.out.println();
+        System.out.println("Distances:");
+        for (Distance distance: distances){
+            System.out.println(distance);
+        }
+    }
+
+    private static BoundingBox getBbox(String[] args){
         if (args.length != 4) {
             System.err.println("Wrong number of args");
             System.exit(1);
@@ -39,39 +75,7 @@ public class Main {
             System.err.println("Wrong bbox argument: " + e.getMessage());
             System.exit(1);
         }
-
-        MapDataDao data = null;
-        try {
-            OsmConnection osm = new OsmConnection(OSM_API,"");
-            data = new MapDataDao(osm);
-            DataHandler dataHandler = new DataHandler();
-            data.getMap(bbox, dataHandler);
-        } catch (OsmNotFoundException e) {
-            System.err.println("API error: " + e.getMessage());
-            System.exit(1);
-        }
-
-        ArrayList<Area> areas = new ArrayList<Area>(areaIds.size());
-        for (Long key : areaIds.keySet()) {
-            areas.add(new Area(key, getName(key, data), calculateArea(areaIds.get(key), data)));
-        }
-        ArrayList<Distance> distances = new ArrayList<Distance>(lengthIds.size());
-        for (Long key : lengthIds.keySet()) {
-            distances.add(new Distance(key, getName(key, data), calculateLength(lengthIds.get(key), data)));
-        }
-
-        Collections.sort(areas);
-        Collections.sort(distances);
-
-        System.out.println("Areas:");
-        for (Area area: areas){
-            System.out.println(area);
-        }
-        System.out.println();
-        System.out.println("Distances:");
-        for (Distance distance: distances){
-            System.out.println(distance);
-        }
+        return bbox;
     }
 
     private static String getName(Long key, MapDataDao data){

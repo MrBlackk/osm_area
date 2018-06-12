@@ -24,10 +24,9 @@ public class Area implements Comparable{
         return area;
     }
 
-    @Override
     public int compareTo(Object o) {
         double compArea = ((Area) o).getArea();
-        return Double.compare(compArea, area);
+        return Double.compare(area, compArea);
     }
 
     @Override

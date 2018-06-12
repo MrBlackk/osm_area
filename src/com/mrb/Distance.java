@@ -24,10 +24,9 @@ public class Distance implements Comparable{
         return distance;
     }
 
-    @Override
     public int compareTo(Object o) {
         double compDistance = ((Distance) o).getDistance();
-        return Double.compare(compDistance, distance);
+        return Double.compare(distance, compDistance);
     }
 
     @Override

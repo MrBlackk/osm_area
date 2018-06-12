@@ -1,4 +1,4 @@
 # osm_area
-Get bbox and calculate area and length of objects
+Calculates areas and distances of objects in bbox(latMin lonMin latMax lonMax). Prints in descending order.
 
 Run with args: latMin lonMin latMax lonMax
